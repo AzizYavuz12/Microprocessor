@@ -1,0 +1,72 @@
+LIST P=16F887
+    INCLUDE <P16F887.INC>
+
+    __CONFIG _CONFIG1, _FOSC_HS & _WDTE_OFF & _PWRTE_ON & _BOREN_OFF & _LVP_OFF & _CPD_OFF & _WRT_OFF & _CP_OFF
+
+    ORG 0x00
+
+SAYAC   EQU H'20'
+SAYAC1  EQU H'21'
+SAYAC2  EQU H'22'
+
+    BSF STATUS, RP0         
+    MOVLW B'00000001'       
+    MOVWF TRISD
+    BCF STATUS, RP0         
+    CLRF PORTD              
+
+MAIN
+    BTFSC PORTD, 0          
+    GOTO MAIN               
+
+    GOTO BUZZER_LOOP
+
+BUZZER_LOOP
+    BSF PORTD, 1            
+    CALL DELAY_3_SEC
+    
+    BTFSS PORTD, 0          
+    GOTO MAIN               
+    
+    BCF PORTD, 1            
+    CALL DELAY_3_SEC
+    
+    
+    BTFSS PORTD, 0          
+    GOTO MAIN               
+    
+    GOTO BUZZER_LOOP
+
+
+DELAY_ONE_MS
+    MOVLW D'250'
+    MOVWF SAYAC
+LOOP_ONE_MS
+    NOP
+    DECFSZ SAYAC, F
+    GOTO LOOP_ONE_MS
+    RETURN
+
+
+DELAY_250_MS
+    MOVLW D'250'
+    MOVWF SAYAC1
+LOOP_250_MS
+    CALL DELAY_ONE_MS
+    DECFSZ SAYAC1, F
+    GOTO LOOP_250_MS
+    RETURN
+
+
+DELAY_3_SEC
+    MOVLW D'12'
+    MOVWF SAYAC2
+LOOP_3_SEC
+    CALL DELAY_250_MS
+    DECFSZ SAYAC2, F
+    GOTO LOOP_3_SEC
+    RETURN
+
+    END
+
+
